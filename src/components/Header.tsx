@@ -1,5 +1,5 @@
 import React from "react";
-import { OrganizationSwitcher, UserButton } from "@clerk/nextjs";
+import {OrganizationSwitcher, SignInButton, UserButton} from "@clerk/nextjs";
 
 const Header = () => {
   return (
@@ -9,6 +9,9 @@ const Header = () => {
         <div className={'flex gap-3'}>
           <OrganizationSwitcher />
           <UserButton />
+            <SignInButton>
+                Sign In
+            </SignInButton>
         </div>
       </div>
     </div>
