@@ -43,7 +43,6 @@ import { api } from "../../convex/_generated/api";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { log } from "node:util";
 
 function FileCardsAction({ file }: { file: Doc<"files"> }) {
   const { toast } = useToast();
@@ -139,7 +138,6 @@ const FileCards = ({ file }: { file: Doc<"files"> }) => {
       </CardContent>
       <CardFooter className={"mt-3 flex justify-center items-center"}>
         <Button
-          className={"flex-1"}
           onClick={() => {
             window.open(Url);
           }}

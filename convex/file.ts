@@ -64,6 +64,7 @@ export const createFile = mutation({
 export const getFiles = query({
   args: {
     orgId: v.string(),
+    query: v.optional(v.string()),
   },
   async handler(ctx, args) {
     const identity = await ctx.auth.getUserIdentity();
@@ -80,10 +81,18 @@ export const getFiles = query({
         "You are not authorized to view files in this organization",
       );
     }
-    return ctx.db
+    const files = await ctx.db
       .query("files")
       .withIndex("org_id", (q) => q.eq("orgId", args.orgId))
       .collect();
+
+    let query = args.query;
+    if (query) {
+      return files.filter((file) =>
+        file.name.toLowerCase().includes(query.toLowerCase()),
+      );
+    }
+    return files;
   },
 });
 
