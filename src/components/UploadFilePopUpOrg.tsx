@@ -26,6 +26,7 @@ import { api } from "../../convex/_generated/api";
 import { useOrganization, useUser } from "@clerk/nextjs";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
+import {Doc} from "../../convex/_generated/dataModel";
 
 const formSchema = z.object({
   filename: z.string().min(2, {
@@ -71,13 +72,24 @@ const UploadFilePopUpOrg = () => {
       headers: { "Content-Type": values.file[0].type },
       body: values.file[0],
     });
+    console.log(values.file[0].type);
     const { storageId } = await result.json();
+    const types = {
+      "image/jpeg": "jpeg",
+      "image/png": "png",
+      "application/pdf": "pdf",
+      "application/zip": "zip",
+      "text/csv": "csv",
+      "video/mp4": "video",
+      "image/svg+xml": "svg",
+    } as unknown as Record<string, Doc<"files">["fileType"]>;
 
     try {
       await createfile({
         name: values.filename,
         orgId: token,
         fileId: storageId,
+        fileType: types[values.file[0].type],
       });
       form.reset();
       setDialogueOpen(false);

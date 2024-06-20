@@ -1,15 +1,17 @@
 import { mutation, MutationCtx, query, QueryCtx } from "./_generated/server";
 import { ConvexError, v } from "convex/values";
 import { getUser } from "./users";
+import { fileType } from "./schema";
 
 export async function hasAccessToOrg(
   ctx: MutationCtx | QueryCtx,
   tokenIdentifier: string,
-  orgId: string,
+  orgId: string | undefined,
 ) {
   const user = await getUser(ctx, tokenIdentifier);
   return (
-    user.orgIds.includes(orgId) || user.tokenIdentifier !== tokenIdentifier
+    user.orgIds.includes(<string>orgId) ||
+    user.tokenIdentifier.includes(<string>orgId)
   );
 }
 
@@ -27,6 +29,7 @@ export const createFile = mutation({
   args: {
     name: v.string(),
     fileId: v.id("_storage"),
+    fileType: fileType,
     orgId: v.string(),
   },
   async handler(ctx, args) {
@@ -37,7 +40,7 @@ export const createFile = mutation({
       );
     }
 
-    // user should be authorized to create a file in a organization, check is authorized
+    // user should be authorized to get a file in an organization, check is authorized
     const hasAccess = await hasAccessToOrg(
       ctx,
       identity.tokenIdentifier,
@@ -53,6 +56,7 @@ export const createFile = mutation({
       name: args.name,
       fileId: args.fileId,
       orgId: args.orgId,
+      fileType: args.fileType,
     });
   },
 });
@@ -80,5 +84,46 @@ export const getFiles = query({
       .query("files")
       .withIndex("org_id", (q) => q.eq("orgId", args.orgId))
       .collect();
+  },
+});
+
+export const deleteFile = mutation({
+  args: {
+    fileId: v.id("files"),
+  },
+  async handler(ctx, args) {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError(
+        "Not authenticated, you must logged in to delete a file",
+      );
+    }
+
+    const file = await ctx.db.get(args.fileId);
+    if (!file) {
+      throw new ConvexError("File not found");
+    }
+
+    const hasAccess = await hasAccessToOrg(
+      ctx,
+      identity.tokenIdentifier,
+      file.orgId,
+    );
+    if (!hasAccess) {
+      throw new ConvexError(
+        "You are not authorized to delete files in this organization",
+      );
+    }
+    await ctx.db.delete(args.fileId);
+  },
+});
+
+// get file url saved in storage
+export const getUrl = query({
+  args: {
+    fileId: v.id("_storage"),
+  },
+  async handler(ctx, args) {
+    return ctx.storage.getUrl(args.fileId);
   },
 });

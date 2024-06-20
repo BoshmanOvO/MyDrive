@@ -4,16 +4,6 @@ import { internal } from "./_generated/api";
 import type { WebhookEvent } from "@clerk/backend";
 import { Webhook } from "svix";
 
-function ensureEnvironmentVariable(name: string): string {
-  const value = process.env[name];
-  if (value === undefined) {
-    throw new Error(`missing environment variable ${name}`);
-  }
-  return value;
-}
-
-const webhookSecret = ensureEnvironmentVariable("CLERK_WEBHOOK_SECRET");
-
 const handleClerkWebhook = httpAction(async (ctx, request) => {
   const event = await validateRequest(request);
   if (!event) {
