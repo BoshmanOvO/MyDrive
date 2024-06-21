@@ -21,6 +21,14 @@ const handleClerkWebhook = httpAction(async (ctx, request) => {
       await ctx.runMutation(internal.users.addOrgIdToUser, {
         tokenIdentifier: `https://busy-wahoo-3.clerk.accounts.dev|${event.data.public_user_data.user_id}`,
         orgId: event.data.organization.id,
+        roles: event.data.role == 'org:admin' ? 'admin' : 'member',
+      });
+      break;
+    case "organizationMembership.updated":
+      await ctx.runMutation(internal.users.updateRoleInOrg, {
+        tokenIdentifier: `https://busy-wahoo-3.clerk.accounts.dev|${event.data.public_user_data.user_id}`,
+        orgId: event.data.organization.id,
+        roles: event.data.role == 'org:admin' ? 'admin' : 'member',
       });
       break;
   }

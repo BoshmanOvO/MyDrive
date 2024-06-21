@@ -139,6 +139,14 @@ export const deleteFile = mutation({
     if (!access) {
       throw new ConvexError("No access to file");
     }
+    const isAdmin = access.user.orgIds
+      .find((org) => org.orgId === access.file.orgId)
+      ?.roles.includes("admin");
+
+    if (!isAdmin) {
+      throw new ConvexError("You have no admin access to delete this file.");
+    }
+
     await ctx.db.delete(args.fileId);
   },
 });

@@ -1,3 +1,4 @@
+'use client';
 import React, { useState } from "react";
 import { Loader2 } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
@@ -48,7 +49,7 @@ const RightSidebar = ({
             <SearchBar query={query} setQuery={setQuery} />
             <UploadFilePopUpOrg />
           </div>
-          {!isLoading && files.length == 0 && (
+          {isLoading && (
             <>
               <div
                 className={"flex flex-col w-full items-center lg:mt-16 mb-5"}

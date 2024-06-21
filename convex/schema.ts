@@ -10,6 +10,7 @@ export const fileType = v.union(
   v.literal("video"),
   v.literal("svg"),
 );
+export const roles = v.union(v.literal("admin"), v.literal("member"));
 
 export default defineSchema({
   files: defineTable({
@@ -18,15 +19,15 @@ export default defineSchema({
     orgId: v.string(),
     fileType,
   }).index("org_id", ["orgId"]),
-  
+
   favourite: defineTable({
     userId: v.id("users"),
     orgId: v.string(),
     fileId: v.id("files"),
   }).index("by_userId_fileId_orgId", ["userId", "orgId", "fileId"]),
-  
+
   users: defineTable({
     tokenIdentifier: v.string(),
-    orgIds: v.array(v.string()),
+    orgIds: v.array(v.object({ orgId: v.string(), roles })),
   }).index("token_identifier", ["tokenIdentifier"]),
 });

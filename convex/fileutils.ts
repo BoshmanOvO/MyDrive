@@ -1,11 +1,10 @@
 import { MutationCtx, QueryCtx } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
-import { getUser } from "./users";
 import { ConvexError } from "convex/values";
 
 export async function hasAccessToOrg(
   ctx: MutationCtx | QueryCtx,
-  orgId: string | undefined,
+  orgId: string,
 ) {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) {
@@ -21,8 +20,8 @@ export async function hasAccessToOrg(
     throw new ConvexError("User not found.");
   }
   const hasAccess =
-    user.orgIds.includes(<string>orgId) ||
-    user.tokenIdentifier.includes(<string>orgId);
+    user.orgIds.some((Id) => Id.orgId === orgId) ||
+    user.tokenIdentifier.includes(orgId);
   if (!hasAccess) {
     throw new ConvexError("No access to organisation");
   }

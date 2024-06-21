@@ -45,6 +45,7 @@ import { api } from "../../convex/_generated/api";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { Protect } from "@clerk/nextjs";
 
 function FileCardsAction({
   file,
@@ -100,24 +101,26 @@ function FileCardsAction({
             }}
           >
             {isFavourited ? (
-              <div className={'flex gap-1 items-center'}>
+              <div className={"flex gap-1 items-center"}>
                 <StarOff className={"size-4"} /> Unfavourite
               </div>
             ) : (
-              <div className={'flex gap-1 items-center'}>
+              <div className={"flex gap-1 items-center"}>
                 <StarIcon className={"size-4"} /> Favourite
               </div>
             )}
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            className={"flex gap-1 text-red-600 items-center cursor-pointer"}
-            onClick={() => {
-              setIsConformPage(true);
-            }}
-          >
-            <TrashIcon className={"size-4"} /> Delete
-          </DropdownMenuItem>
+          {/*<Protect role="org:admin">*/}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className={"flex gap-1 text-red-600 items-center cursor-pointer"}
+              onClick={() => {
+                setIsConformPage(true);
+              }}
+            >
+              <TrashIcon className={"size-4"} /> Delete
+            </DropdownMenuItem>
+          {/*</Protect>*/}
         </DropdownMenuContent>
       </DropdownMenu>
     </>

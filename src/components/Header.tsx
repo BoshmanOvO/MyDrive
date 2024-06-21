@@ -1,5 +1,5 @@
 import React from "react";
-import {OrganizationSwitcher, SignInButton, UserButton} from "@clerk/nextjs";
+import {OrganizationSwitcher, SignInButton, SignOutButton, UserButton} from "@clerk/nextjs";
 
 const Header = () => {
   return (
@@ -12,6 +12,9 @@ const Header = () => {
             <SignInButton>
                 Sign In
             </SignInButton>
+            <SignOutButton>
+                Sign Out
+            </SignOutButton>
         </div>
       </div>
     </div>
