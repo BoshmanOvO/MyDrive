@@ -4,6 +4,7 @@ import "./globals.css";
 import ConvexClientProvider from "@/providers/ConvexClientProvider";
 import Header from "@/components/Header";
 import { Toaster } from "@/components/ui/toaster"
+import React from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 

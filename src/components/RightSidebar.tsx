@@ -8,7 +8,13 @@ import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useOrganization, useUser } from "@clerk/nextjs";
 
-const RightSidebar = () => {
+const RightSidebar = ({
+  title,
+  favourites,
+}: {
+  title: string;
+  favourites?: boolean;
+}) => {
   const user = useUser();
   const organization = useOrganization();
   let orgId: string | undefined = undefined;
@@ -18,25 +24,25 @@ const RightSidebar = () => {
   const [query, setQuery] = useState("");
   const files = useQuery(
     api.file.getFiles,
-    orgId ? { orgId: orgId, query: query } : "skip",
+    orgId ? { orgId: orgId, query: query, favourite: favourites } : "skip",
   );
   const isLoading = files == undefined;
   return (
-    <div>
+    <div className={"w-full ml-4"}>
       {isLoading && (
         <div className={"flex flex-col w-full items-center mt-16 mb-5"}>
           <Loader2 className={"h-32 w-32 animate-spin text-gray-400"} />
           <h1 className={"text-2xl"}>Loading your files...</h1>
         </div>
       )}
-      {!isLoading && (
+      {!isLoading && files.length >= 0 && (
         <>
           <div className={"flex justify-between items-center mb-8"}>
-            <h1 className={"text-4xl font-bold"}>Your Files</h1>
+            <h1 className={"text-4xl font-bold w-[180px]"}>{title}</h1>
             <SearchBar query={query} setQuery={setQuery} />
             <UploadFilePopUpOrg />
           </div>
-          {files.length >= 0 && !query && (
+          {!isLoading && files.length == 0 && (
             <>
               <div
                 className={"flex flex-col w-full items-center lg:mt-16 mb-5"}

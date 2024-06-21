@@ -47,7 +47,9 @@ import Image from "next/image";
 function FileCardsAction({ file }: { file: Doc<"files"> }) {
   const { toast } = useToast();
   const deleteFile = useMutation(api.file.deleteFile);
+  const toggleFavourite = useMutation(api.file.toggleFavourite);
   const [isConformPage, setIsConformPage] = useState(false);
+  
   return (
     <>
       <AlertDialog open={isConformPage} onOpenChange={setIsConformPage}>
@@ -83,6 +85,15 @@ function FileCardsAction({ file }: { file: Doc<"files"> }) {
           <EllipsisVertical />
         </DropdownMenuTrigger>
         <DropdownMenuContent>
+          <DropdownMenuItem
+            className={"flex gap-1 items-center cursor-pointer"}
+            onClick={async () => {
+              await toggleFavourite({ fileId: file._id });
+            }}
+          >
+            <TrashIcon className={"size-4"} /> Favourite
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
           <DropdownMenuItem
             className={"flex gap-1 text-red-600 items-center cursor-pointer"}
             onClick={() => {
