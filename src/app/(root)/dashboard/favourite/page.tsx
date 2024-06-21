@@ -6,7 +6,7 @@ const Page = () => {
   return (
     <main className="container mx-auto pt-12">
       <div className={"flex"}>
-        <RightSidebar title={"Favourite"} favourites={true}/>
+        <RightSidebar title={"Favourite"} favouritesOnly={true}/>
       </div>
     </main>
   );

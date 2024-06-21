@@ -35,6 +35,8 @@ import {
   FolderArchive,
   GanttChartIcon,
   ImageIcon,
+  StarIcon,
+  StarOff,
   TrashIcon,
   Video,
 } from "lucide-react";
@@ -44,12 +46,18 @@ import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
-function FileCardsAction({ file }: { file: Doc<"files"> }) {
+function FileCardsAction({
+  file,
+  isFavourited,
+}: {
+  file: Doc<"files">;
+  isFavourited: boolean | undefined;
+}) {
   const { toast } = useToast();
   const deleteFile = useMutation(api.file.deleteFile);
   const toggleFavourite = useMutation(api.file.toggleFavourite);
   const [isConformPage, setIsConformPage] = useState(false);
-  
+
   return (
     <>
       <AlertDialog open={isConformPage} onOpenChange={setIsConformPage}>
@@ -91,7 +99,15 @@ function FileCardsAction({ file }: { file: Doc<"files"> }) {
               await toggleFavourite({ fileId: file._id });
             }}
           >
-            <TrashIcon className={"size-4"} /> Favourite
+            {isFavourited ? (
+              <div className={'flex gap-1 items-center'}>
+                <StarOff className={"size-4"} /> Unfavourite
+              </div>
+            ) : (
+              <div className={'flex gap-1 items-center'}>
+                <StarIcon className={"size-4"} /> Favourite
+              </div>
+            )}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
@@ -108,7 +124,13 @@ function FileCardsAction({ file }: { file: Doc<"files"> }) {
   );
 }
 
-const FileCards = ({ file }: { file: Doc<"files"> }) => {
+const FileCards = ({
+  file,
+  favourites,
+}: {
+  file: Doc<"files">;
+  favourites: Doc<"favourite">[];
+}) => {
   const fileTypes = {
     jpeg: <ImageIcon />,
     png: <ImageIcon />,
@@ -118,19 +140,24 @@ const FileCards = ({ file }: { file: Doc<"files"> }) => {
     video: <Video />,
     svg: <ImageIcon />,
   } as unknown as Record<Doc<"files">["fileType"], ReactNode>;
+
+  const isFavourites = favourites.some(
+    (favourite) => favourite.fileId === file._id,
+  );
+
   const getUrl = useQuery(api.file.getUrl, { fileId: file.fileId });
   let Url = getUrl ? getUrl.toString() : "";
   console.log(getUrl);
   console.log(file.fileId);
   return (
-    <Card>
+    <Card className={"hover:bg-slate-100"}>
       <CardHeader className={"relative"}>
         <CardTitle className={"flex gap-2"}>
           <p className={"flex justify-center"}>{fileTypes[file.fileType]}</p>
           {file.name}
         </CardTitle>
         <span className={"absolute top-2 right-2"}>
-          <FileCardsAction file={file} />
+          <FileCardsAction isFavourited={isFavourites} file={file} />
         </span>
       </CardHeader>
       <CardContent

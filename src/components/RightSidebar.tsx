@@ -10,10 +10,10 @@ import { useOrganization, useUser } from "@clerk/nextjs";
 
 const RightSidebar = ({
   title,
-  favourites,
+  favouritesOnly,
 }: {
   title: string;
-  favourites?: boolean;
+  favouritesOnly?: boolean;
 }) => {
   const user = useUser();
   const organization = useOrganization();
@@ -22,22 +22,28 @@ const RightSidebar = ({
     orgId = organization.organization?.id ?? user.user?.id;
   }
   const [query, setQuery] = useState("");
+
+  const getAllFavourites = useQuery(
+    api.file.getAllFavourites,
+    orgId ? { orgId: orgId } : "skip",
+  );
+
   const files = useQuery(
     api.file.getFiles,
-    orgId ? { orgId: orgId, query: query, favourite: favourites } : "skip",
+    orgId ? { orgId: orgId, query: query, favourite: favouritesOnly } : "skip",
   );
   const isLoading = files == undefined;
   return (
     <div className={"w-full ml-4"}>
       {isLoading && (
-        <div className={"flex flex-col w-full items-center mt-16 mb-5"}>
+        <div className={"flex flex-col w-full items-center mt-36 mb-5"}>
           <Loader2 className={"h-32 w-32 animate-spin text-gray-400"} />
           <h1 className={"text-2xl"}>Loading your files...</h1>
         </div>
       )}
       {!isLoading && files.length >= 0 && (
         <>
-          <div className={"flex justify-between items-center mb-8"}>
+          <div className={"flex justify-between items-center -mt-10"}>
             <h1 className={"text-4xl font-bold w-[180px]"}>{title}</h1>
             <SearchBar query={query} setQuery={setQuery} />
             <UploadFilePopUpOrg />
@@ -59,8 +65,8 @@ const RightSidebar = ({
               </div>
             </>
           )}
-          <div className={"grid grid-cols-4 gap-4"}>
-            {files?.map((file) => <FileCards key={file._id} file={file} />)}
+          <div className={"grid grid-cols-4 gap-4 mt-10"}>
+            {files?.map((file) => <FileCards favourites={getAllFavourites ?? []} key={file._id} file={file} />)}
           </div>
         </>
       )}

@@ -2,7 +2,6 @@ import { mutation, query } from "./_generated/server";
 import { ConvexError, v } from "convex/values";
 import { fileType } from "./schema";
 import { hasAccessToFile, hasAccessToOrg } from "./fileutils";
-import { getUser } from "./users";
 
 export const generateUploadUrl = mutation(async (ctx) => {
   const identity = await ctx.auth.getUserIdentity();
@@ -29,11 +28,7 @@ export const createFile = mutation({
       );
     }
     // user should be authorized to get a file in an organization, check is authorized
-    const hasAccess = await hasAccessToOrg(
-      ctx,
-      identity.tokenIdentifier,
-      args.orgId,
-    );
+    const hasAccess = await hasAccessToOrg(ctx, args.orgId);
     if (!hasAccess) {
       throw new ConvexError(
         "You are not authorized to create a file in this organization",
@@ -56,15 +51,7 @@ export const getFiles = query({
     favourite: v.optional(v.boolean()),
   },
   async handler(ctx, args) {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      return [];
-    }
-    const hasAccess = await hasAccessToOrg(
-      ctx,
-      identity.tokenIdentifier,
-      args.orgId,
-    );
+    const hasAccess = await hasAccessToOrg(ctx, args.orgId);
     if (!hasAccess) {
       throw new ConvexError(
         "You are not authorized to view files in this organization",
@@ -81,14 +68,13 @@ export const getFiles = query({
         file.name.toLowerCase().includes(query.toLowerCase()),
       );
     }
-    
-    // if there is lot of files in the system they you may have to change these
+
+    // if there is a lot of files in the system they may have to change these
     if (args.favourite) {
-      const user = await getUser(ctx, identity.tokenIdentifier);
       const fav = await ctx.db
         .query("favourite")
         .withIndex("by_userId_fileId_orgId", (q) =>
-          q.eq("userId", user._id).eq("orgId", args.orgId),
+          q.eq("userId", hasAccess.user._id).eq("orgId", args.orgId),
         )
         .collect();
       files = files.filter((file) => fav.some((f) => f.fileId === file._id));
@@ -125,6 +111,22 @@ export const toggleFavourite = mutation({
     } else {
       await ctx.db.delete(favourite._id);
     }
+  },
+});
+
+export const getAllFavourites = query({
+  args: { orgId: v.string() },
+  async handler(ctx, args) {
+    const hasAccess = await hasAccessToOrg(ctx, args.orgId);
+    if (!hasAccess) {
+      return [];
+    }
+    return await ctx.db
+      .query("favourite")
+      .withIndex("by_userId_fileId_orgId", (q) =>
+        q.eq("userId", hasAccess.user._id).eq("orgId", args.orgId),
+      )
+      .collect();
   },
 });
 
