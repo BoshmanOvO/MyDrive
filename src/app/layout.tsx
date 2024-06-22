@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Manrope } from "next/font/google";
 import "./globals.css";
 import ConvexClientProvider from "@/providers/ConvexClientProvider";
 import Header from "@/components/Header";
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/toaster";
 import React from "react";
 
-const inter = Inter({ subsets: ["latin"] });
+const manRope = Manrope({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "File Keeper",
   description: "Generated your podcasts using AI",
   icons: {
-    icon: "public/logo.svg",
+    icon: "/upload.svg",
   },
 };
 
@@ -23,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={manRope.className}>
         <ConvexClientProvider>
           <Header />
           {children}

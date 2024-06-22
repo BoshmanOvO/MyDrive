@@ -9,7 +9,7 @@ const Sidebar = () => {
   const pathname = usePathname();
   return (
     <div className={"w-40 flex flex-col gap-5"}>
-      <Link href={"/dashboard/files"}>
+      <Link href={"/dashboard/files"} className={'hover:bg-slate-100 rounded-2xl'}>
         <Button
           variant={"link"}
           className={cn("flex gap-2", {
@@ -20,7 +20,7 @@ const Sidebar = () => {
           <h1 className={"font-bold text-base"}>All file</h1>
         </Button>
       </Link>
-      <Link href={"/dashboard/favourite"}>
+      <Link href={"/dashboard/favourite"} className={'hover:bg-slate-100 rounded-2xl'}>
         <Button
           variant={"link"}
           className={cn("flex gap-2", {
@@ -31,7 +31,7 @@ const Sidebar = () => {
           <h1 className={"font-bold text-base"}>Favourite</h1>
         </Button>
       </Link>
-      <Link href={"/dashboard/trash"}>
+      <Link href={"/dashboard/trash"} className={'hover:bg-slate-100 rounded-2xl'}>
         <Button
           variant={"link"}
           className={cn("flex gap-2", {

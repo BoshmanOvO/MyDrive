@@ -1,7 +1,17 @@
-import { mutation, query } from "./_generated/server";
+import { internalMutation, mutation, query } from "./_generated/server";
 import { ConvexError, v } from "convex/values";
 import { fileType } from "./schema";
 import { hasAccessToFile, hasAccessToOrg } from "./fileutils";
+
+// get file url saved in storage
+export const getUrl = query({
+  args: {
+    fileId: v.id("_storage"),
+  },
+  async handler(ctx, args) {
+    return ctx.storage.getUrl(args.fileId);
+  },
+});
 
 export const generateUploadUrl = mutation(async (ctx) => {
   const identity = await ctx.auth.getUserIdentity();
@@ -21,25 +31,21 @@ export const createFile = mutation({
     orgId: v.string(),
   },
   async handler(ctx, args) {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new ConvexError(
-        "Not authenticated, you must logged in to create a file",
-      );
-    }
     // user should be authorized to get a file in an organization, check is authorized
     const hasAccess = await hasAccessToOrg(ctx, args.orgId);
     if (!hasAccess) {
       throw new ConvexError(
         "You are not authorized to create a file in this organization",
       );
-    }
+    } // this is giving error while creating the file.
 
     await ctx.db.insert("files", {
       name: args.name,
       fileId: args.fileId,
       orgId: args.orgId,
       fileType: args.fileType,
+      markDeleted: false,
+      userId: hasAccess.user._id,
     });
   },
 });
@@ -49,13 +55,12 @@ export const getFiles = query({
     orgId: v.string(),
     query: v.optional(v.string()),
     favourite: v.optional(v.boolean()),
+    deleted: v.optional(v.boolean()),
   },
   async handler(ctx, args) {
     const hasAccess = await hasAccessToOrg(ctx, args.orgId);
     if (!hasAccess) {
-      throw new ConvexError(
-        "You are not authorized to view files in this organization",
-      );
+      return [];
     }
     let files = await ctx.db
       .query("files")
@@ -78,6 +83,12 @@ export const getFiles = query({
         )
         .collect();
       files = files.filter((file) => fav.some((f) => f.fileId === file._id));
+    }
+
+    if (args.deleted) {
+      files = files.filter((file) => file.markDeleted);
+    } else {
+      files = files.filter((file) => !file.markDeleted);
     }
     return files;
   },
@@ -146,17 +157,43 @@ export const deleteFile = mutation({
     if (!isAdmin) {
       throw new ConvexError("You have no admin access to delete this file.");
     }
-
-    await ctx.db.delete(args.fileId);
+    await ctx.db.patch(args.fileId, { markDeleted: true });
   },
 });
 
-// get file url saved in storage
-export const getUrl = query({
+export const deleteAfterDays = internalMutation({
+  args: {},
+  async handler(ctx) {
+    const files = await ctx.db
+      .query("files")
+      .withIndex("by_deleted", (q) => q.eq("markDeleted", true))
+      .collect();
+
+    await Promise.all(
+      files.map(async (file) => {
+        await ctx.storage.delete(file.fileId);
+        return await ctx.db.delete(file._id);
+      }),
+    );
+  },
+});
+
+export const restoreFile = mutation({
   args: {
-    fileId: v.id("_storage"),
+    fileId: v.id("files"),
   },
   async handler(ctx, args) {
-    return ctx.storage.getUrl(args.fileId);
+    const access = await hasAccessToFile(ctx, args.fileId);
+    if (!access) {
+      throw new ConvexError("No access to file");
+    }
+    const isAdmin = access.user.orgIds
+      .find((org) => org.orgId === access.file.orgId)
+      ?.roles.includes("admin");
+
+    if (!isAdmin) {
+      throw new ConvexError("You have no admin access to delete this file.");
+    }
+    await ctx.db.patch(args.fileId, { markDeleted: false });
   },
 });

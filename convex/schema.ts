@@ -18,7 +18,11 @@ export default defineSchema({
     fileId: v.id("_storage"),
     orgId: v.string(),
     fileType,
-  }).index("org_id", ["orgId"]),
+    markDeleted: v.boolean(),
+    userId: v.id("users"),
+  })
+    .index("org_id", ["orgId"])
+    .index("by_deleted", ["markDeleted"]),
 
   favourite: defineTable({
     userId: v.id("users"),
@@ -29,5 +33,7 @@ export default defineSchema({
   users: defineTable({
     tokenIdentifier: v.string(),
     orgIds: v.array(v.object({ orgId: v.string(), roles })),
+    name: v.optional(v.string()),
+    imageUrl: v.optional(v.string()),
   }).index("token_identifier", ["tokenIdentifier"]),
 });

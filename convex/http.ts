@@ -14,19 +14,28 @@ const handleClerkWebhook = httpAction(async (ctx, request) => {
   switch (event.type) {
     case "user.created":
       await ctx.runMutation(internal.users.createUser, {
-        tokenIdentifier: `https://busy-wahoo-3.clerk.accounts.dev|${event.data.id}`,
+        tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${event.data.id}`,
+        name: `${event.data.first_name ?? ""} ${event.data.last_name ?? ""}`,
+        imageUrl: event.data.image_url,
+      });
+      break;
+    case "user.updated":
+      await ctx.runMutation(internal.users.updateUser, {
+        tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${event.data.id}`,
+        name: `${event.data.first_name ?? ""} ${event.data.last_name ?? ""}`,
+        imageUrl: event.data.image_url,
       });
       break;
     case "organizationMembership.created":
       await ctx.runMutation(internal.users.addOrgIdToUser, {
-        tokenIdentifier: `https://busy-wahoo-3.clerk.accounts.dev|${event.data.public_user_data.user_id}`,
+        tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${event.data.public_user_data.user_id}`,
         orgId: event.data.organization.id,
         roles: event.data.role == 'org:admin' ? 'admin' : 'member',
       });
       break;
     case "organizationMembership.updated":
       await ctx.runMutation(internal.users.updateRoleInOrg, {
-        tokenIdentifier: `https://busy-wahoo-3.clerk.accounts.dev|${event.data.public_user_data.user_id}`,
+        tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${event.data.public_user_data.user_id}`,
         orgId: event.data.organization.id,
         roles: event.data.role == 'org:admin' ? 'admin' : 'member',
       });

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React, { useState } from "react";
 import { Loader2 } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
@@ -12,9 +12,11 @@ import { useOrganization, useUser } from "@clerk/nextjs";
 const RightSidebar = ({
   title,
   favouritesOnly,
+  deleted,
 }: {
   title: string;
   favouritesOnly?: boolean;
+  deleted?: boolean;
 }) => {
   const user = useUser();
   const organization = useOrganization();
@@ -31,7 +33,14 @@ const RightSidebar = ({
 
   const files = useQuery(
     api.file.getFiles,
-    orgId ? { orgId: orgId, query: query, favourite: favouritesOnly } : "skip",
+    orgId
+      ? {
+          orgId: orgId,
+          query: query,
+          favourite: favouritesOnly,
+          deleted: deleted,
+        }
+      : "skip",
   );
   const isLoading = files == undefined;
   return (
@@ -66,8 +75,14 @@ const RightSidebar = ({
               </div>
             </>
           )}
-          <div className={"grid grid-cols-4 gap-4 mt-10"}>
-            {files?.map((file) => <FileCards favourites={getAllFavourites ?? []} key={file._id} file={file} />)}
+          <div className={"grid grid-cols-3 gap-7 mt-10"}>
+            {files?.map((file) => (
+              <FileCards
+                favourites={getAllFavourites ?? []}
+                key={file._id}
+                file={file}
+              />
+            ))}
           </div>
         </>
       )}
