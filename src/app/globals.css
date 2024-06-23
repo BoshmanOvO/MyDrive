@@ -67,6 +67,11 @@
       --input: 215 27.9% 16.9%;
       --ring: 216 12.2% 83.9%;
     }
+    .glassmorphism-auth {
+      background: rgba(6, 3, 3, 0.711);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
   }
 
   @layer base {

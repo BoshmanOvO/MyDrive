@@ -22,14 +22,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={manRope.className}>
-        <ConvexClientProvider>
-          <Header />
+    <ConvexClientProvider>
+      <html lang="en">
+        <body className={manRope.className}>
           <Toaster />
+          <Header />
           {children}
-        </ConvexClientProvider>
-      </body>
-    </html>
+        </body>
+      </html>
+    </ConvexClientProvider>
   );
 }

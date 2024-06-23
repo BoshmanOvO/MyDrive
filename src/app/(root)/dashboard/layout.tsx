@@ -1,6 +1,7 @@
 "use client"
 import React from "react";
 import LeftSidebar from "@/components/LeftSidebar";
+import Header from "@/components/Header";
 
 export default function DashBoardLayout({
   children,

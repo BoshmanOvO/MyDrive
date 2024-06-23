@@ -149,39 +149,42 @@ const RightSidebar = ({
                 No favourite files
               </h1>
             </div>
+          ) : deleted ? (
+            <div className={"flex flex-col w-full items-center lg:mt-16 mb-5"}>
+              <Image
+                alt={"Empty file trash image"}
+                src={"/trash.svg"}
+                height={300}
+                width={300}
+              />
+              <h1 className={"text-center text-lg text-gray-500 mt-5"}>
+                No deleted files
+              </h1>
+            </div>
+          ) : query !== "" ? (
+            <div className={"flex flex-col w-full items-center lg:mt-16 mb-5"}>
+              <Image
+                alt={"Empty file upload image"}
+                src={"/nodata.svg"}
+                height={200}
+                width={200}
+              />
+              <h1 className={"text-center text-lg text-gray-500 mt-5"}>
+                No files found
+              </h1>
+            </div>
           ) : (
-            <>
-              {deleted ? (
-                <div
-                  className={"flex flex-col w-full items-center lg:mt-16 mb-5"}
-                >
-                  <Image
-                    alt={"Empty file trash image"}
-                    src={"/trash.svg"}
-                    height={300}
-                    width={300}
-                  />
-                  <h1 className={"text-center text-lg text-gray-500 mt-5"}>
-                    {" "}
-                    No deleted files{" "}
-                  </h1>
-                </div>
-              ) : (
-                <div
-                  className={"flex flex-col w-full items-center lg:mt-16 mb-5"}
-                >
-                  <Image
-                    alt={"Empty file upload image"}
-                    src={"/upload.svg"}
-                    height={300}
-                    width={300}
-                  />
-                  <h1 className={"text-center text-lg text-gray-500 mt-5"}>
-                    No files uploaded yet.
-                  </h1>
-                </div>
-              )}
-            </>
+            <div className={"flex flex-col w-full items-center lg:mt-16 mb-5"}>
+              <Image
+                alt={"Empty file upload image"}
+                src={"/upload.svg"}
+                height={300}
+                width={300}
+              />
+              <h1 className={"text-center text-lg text-gray-500 mt-5"}>
+                No files uploaded yet.
+              </h1>
+            </div>
           )}
         </>
       )}
