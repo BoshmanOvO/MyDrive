@@ -32,8 +32,7 @@ const formSchema = z.object({
   filename: z.string().min(2, {
     message: "Filename must be at least 2 characters.",
   }),
-  file: z
-    .instanceof(FileList)
+  file: z.custom<FileList>((files) => files.instanceof(FileList), "Required")
     .refine((file) => file?.length == 1, "File is required."),
 });
 
