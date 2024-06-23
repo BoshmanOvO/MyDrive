@@ -58,10 +58,18 @@ const RightSidebar = ({
         }
       : "skip",
   );
+
+  const modifiedFiles = files?.map((file) => ({
+    ...file,
+    isFav: (getAllFavourites ?? []).some(
+      (favourite) => favourite.fileId === file._id,
+    ),
+  }));
+
   const isLoading = files == undefined;
   return (
-    <div className={"w-full ml-4"}>
-      <div className={"flex justify-between items-center -mt-10"}>
+    <section className={"w-full ml-4 mb-5"}>
+      <div className={"flex justify-between items-center -mt-16"}>
         <h1 className={"text-4xl font-bold w-[180px]"}>{title}</h1>
         <SearchBar query={query} setQuery={setQuery} />
         <UploadFilePopUpOrg />
@@ -106,27 +114,25 @@ const RightSidebar = ({
             </Select>
           </div>
         </div>
-
-        {isLoading && (
+        {isLoading ? (
           <div className={"flex flex-col w-full items-center mt-36 mb-5"}>
-            <Loader2 className={"h-32 w-32 animate-spin text-gray-400"} />
+            <Loader2 className={"h-28 w-28 animate-spin text-gray-400"} />
             <h1 className={"text-2xl"}>Loading your files...</h1>
           </div>
+        ) : (
+          <>
+            <TabsContent value="grid" className={"mt-5"}>
+              <div className={"grid grid-cols-3 gap-6"}>
+                {modifiedFiles?.map((file) => (
+                  <FileCards key={file._id} file={file} />
+                ))}
+              </div>
+            </TabsContent>
+            <TabsContent value="table" className={"mt-5"}>
+              <FileTable columns={columns} data={modifiedFiles ?? []} />
+            </TabsContent>
+          </>
         )}
-        <TabsContent value="grid" className={"mt-5"}>
-          <div className={"grid grid-cols-3 gap-7"}>
-            {files?.map((file) => (
-              <FileCards
-                favourites={getAllFavourites ?? []}
-                key={file._id}
-                file={file}
-              />
-            ))}
-          </div>
-        </TabsContent>
-        <TabsContent value="table" className={"mt-5"}>
-          <FileTable columns={columns} data={files ?? []} />
-        </TabsContent>
       </Tabs>
 
       {files?.length == 0 && (
@@ -179,7 +185,7 @@ const RightSidebar = ({
           )}
         </>
       )}
-    </div>
+    </section>
   );
 };
 

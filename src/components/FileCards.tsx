@@ -24,14 +24,9 @@ import { fileTypes } from "@/lib/fileTypes";
 
 const FileCards = ({
   file,
-  favourites,
 }: {
-  file: Doc<"files">;
-  favourites: Doc<"favourite">[];
+  file: Doc<"files"> & { isFav ?: boolean }
 }) => {
-  const isFavourites = favourites.some(
-    (favourite) => favourite.fileId === file._id,
-  );
   const userProfile = useQuery(api.users.getUserProfile, {
     userId: file.userId,
   });
@@ -45,7 +40,7 @@ const FileCards = ({
           <h1 className={"flex overflow-hidden"}>{file.name}</h1>
         </CardTitle>
         <span className={"absolute top-2 right-2"}>
-          <FileCardsAction isFavorite={isFavourites} file={file} />
+          <FileCardsAction isFavorite={file.isFav} file={file} />
         </span>
       </CardHeader>
       <CardContent

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title: "File Keeper",
   description: "Generated your podcasts using AI",
   icons: {
-    icon: "/public/logo.svg",
+    icon: "/icon.png",
   },
 };
 
@@ -26,8 +26,8 @@ export default function RootLayout({
       <body className={manRope.className}>
         <ConvexClientProvider>
           <Header />
-          {children}
           <Toaster />
+          {children}
         </ConvexClientProvider>
       </body>
     </html>

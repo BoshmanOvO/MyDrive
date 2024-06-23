@@ -1,5 +1,4 @@
 "use client";
-
 import { ColumnDef } from "@tanstack/react-table";
 import { Doc, Id } from "../../convex/_generated/dataModel";
 import { formatRelative } from "date-fns";
@@ -8,7 +7,6 @@ import React, { ReactNode } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import FileCardsAction from "@/components/FileCardAction";
-import Image from "next/image";
 import { fileTypes } from "@/lib/fileTypes";
 
 function UserProfile({ userId }: { userId: Id<"users"> }) {
@@ -24,7 +22,7 @@ function UserProfile({ userId }: { userId: Id<"users"> }) {
   );
 }
 
-export const columns: ColumnDef<Doc<"files">>[] = [
+export const columns: ColumnDef<Doc<"files"> & { isFav ?: boolean }>[] = [
   {
     header: "Name",
     cell: ({ row }) => {
@@ -64,7 +62,7 @@ export const columns: ColumnDef<Doc<"files">>[] = [
   {
     header: "Actions",
     cell: ({ row }) => {
-      return <FileCardsAction file={row.original} isFavorite={false} />;
+      return <FileCardsAction file={row.original} isFavorite={row.original.isFav} />;
       // TODO :  favourite not working yet of the grid
     },
   },

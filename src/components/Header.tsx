@@ -1,17 +1,17 @@
 import React from "react";
 import {
-  OrganizationSwitcher,
+  OrganizationSwitcher, SignedIn,
+  SignedOut,
   SignInButton,
-  SignOutButton,
   UserButton,
 } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
-import {Button} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 const Header = () => {
   return (
-    <div className={"border-b py-3 bg-gray-100"}>
+    <div className={"relative z-10 border-b py-3 bg-gray-100"}>
       <div className={"container flex mx-auto justify-between"}>
         <Link
           href={"/"}
@@ -20,12 +20,21 @@ const Header = () => {
           <Image src={"/logo.svg"} alt={"myLogo"} width={40} height={40} />
           File Keeper
         </Link>
-        <Link href={"/dashboard"}>
-            <Button variant={'link'}>Dashboard</Button>
-        </Link>
+
+        <SignedIn>
+          <Link href={"/dashboard/files"}>
+            <Button variant={"link"}>Your Files</Button>
+          </Link>
+        </SignedIn>
+
         <div className={"flex gap-3"}>
           <OrganizationSwitcher />
           <UserButton />
+          <SignedOut>
+            <SignInButton>
+              <Button>Sign In</Button>
+            </SignInButton>
+          </SignedOut>
         </div>
       </div>
     </div>

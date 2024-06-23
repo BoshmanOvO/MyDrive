@@ -67,7 +67,7 @@ export function FileCardsAction({
                   title: "File deleted Successfully",
                   variant: "default",
                   description:
-                    "This file is deleted from this organisation and will be deleted permanently after 15 days from today.",
+                    "This file is moved to trash and will be deleted permanently after 15 days from today.",
                 });
               }}
             >
@@ -107,17 +107,27 @@ export function FileCardsAction({
               </div>
             )}
           </DropdownMenuItem>
-          <Protect condition={(check) => {
-            return check({
-              role: "org:admin",
-            }) || file.userId === me?._id;
-          }}>
+          <Protect
+            condition={(check) => {
+              return (
+                check({
+                  role: "org:admin",
+                }) || file.userId === me?._id
+              );
+            }}
+          >
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className={"flex gap-1 text-red-600 items-center cursor-pointer"}
               onClick={async () => {
                 if (file.markDeleted) {
                   await restoreFile({ fileId: file._id });
+                  toast({
+                    title: "File Restored Successfully",
+                    variant: "default",
+                    description:
+                      "This file is restored and is available in Your Files.",
+                  });
                 } else {
                   setIsConformPage(true);
                 }
@@ -139,6 +149,5 @@ export function FileCardsAction({
     </>
   );
 }
-
 
 export default FileCardsAction;
