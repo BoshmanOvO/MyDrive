@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title: "File Keeper",
   description: "Generated your podcasts using AI",
   icons: {
-    icon: "/upload.svg",
+    icon: "/public/logo.svg",
   },
 };
 

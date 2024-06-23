@@ -65,7 +65,7 @@ const FileCards = ({
 
       <CardFooter className={"flex justify-between"}>
         <div
-          className={"flex mt-3 gap-2 text-xs text-gray-500 items-center w-40"}
+          className={"flex mt-5 gap-2 text-xs text-gray-500 items-center w-40"}
         >
           <Avatar className={"size-6"}>
             <AvatarImage src={userProfile?.imageUrl} />
@@ -73,7 +73,7 @@ const FileCards = ({
           </Avatar>
           {userProfile?.name}
         </div>
-        <h1 className={"text-xs text-gray-400 flex items-center mt-3"}>
+        <h1 className={"text-xs text-gray-400 flex items-center mt-5"}>
           Uploaded On : {formatRelative(file._creationTime, new Date())}
         </h1>
       </CardFooter>

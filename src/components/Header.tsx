@@ -11,7 +11,7 @@ import {Button} from "@/components/ui/button";
 
 const Header = () => {
   return (
-    <div className={"border-b py-3 bg-gray-50"}>
+    <div className={"border-b py-3 bg-gray-100"}>
       <div className={"container flex mx-auto justify-between"}>
         <Link
           href={"/"}

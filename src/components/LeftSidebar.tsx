@@ -3,9 +3,9 @@ import Sidebar from "@/components/Sidebar";
 
 const LeftSidebar = () => {
   return (
-    <div className={"flex gap-8"}>
+    <section className={"relative flex gap-8 h-[calc(100vh-120px)]"}>
       <Sidebar/>
-    </div>
+    </section>
   );
 };
 

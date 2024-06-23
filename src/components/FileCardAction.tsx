@@ -43,6 +43,7 @@ export function FileCardsAction({
   const deleteFile = useMutation(api.file.deleteFile);
   const restoreFile = useMutation(api.file.restoreFile);
   const toggleFavourite = useMutation(api.file.toggleFavourite);
+  const me = useQuery(api.users.getMe);
   const [isConformPage, setIsConformPage] = useState(false);
 
   return (
@@ -106,7 +107,11 @@ export function FileCardsAction({
               </div>
             )}
           </DropdownMenuItem>
-          <Protect role="org:admin">
+          <Protect condition={(check) => {
+            return check({
+              role: "org:admin",
+            }) || file.userId === me?._id;
+          }}>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className={"flex gap-1 text-red-600 items-center cursor-pointer"}

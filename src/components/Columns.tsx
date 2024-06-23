@@ -65,6 +65,7 @@ export const columns: ColumnDef<Doc<"files">>[] = [
     header: "Actions",
     cell: ({ row }) => {
       return <FileCardsAction file={row.original} isFavorite={false} />;
+      // TODO :  favourite not working yet of the grid
     },
   },
 ];

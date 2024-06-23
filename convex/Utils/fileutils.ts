@@ -1,5 +1,6 @@
-import { MutationCtx, QueryCtx } from "./_generated/server";
-import { Id } from "./_generated/dataModel";
+import { MutationCtx, QueryCtx } from "../_generated/server";
+import {Doc, Id} from "../_generated/dataModel";
+import {ConvexError} from "convex/values";
 
 export async function hasAccessToOrg(
     ctx: MutationCtx | QueryCtx,
@@ -40,4 +41,16 @@ export async function hasAccessToFile(
         return null;
     }
     return { user: hasAccess.user, file };
+}
+
+export function canDelete(user: Doc<"users">, file: Doc<"files">) {
+    const canDelete =
+        file.userId === user._id ||
+        user.orgIds
+            .find((org) => org.orgId === file.orgId)
+            ?.roles.includes("admin");
+
+    if (!canDelete) {
+        throw new ConvexError("You have no access to delete this file.");
+    }
 }

@@ -1,7 +1,8 @@
 import { internalMutation, mutation, query } from "./_generated/server";
 import { ConvexError, v } from "convex/values";
 import { fileType } from "./schema";
-import { hasAccessToFile, hasAccessToOrg } from "./fileutils";
+import {canDelete, hasAccessToFile, hasAccessToOrg} from "./Utils/fileutils";
+import {Doc} from "./_generated/dataModel";
 
 // get file url saved in storage
 export const getUrl = query({
@@ -56,6 +57,7 @@ export const getFiles = query({
     query: v.optional(v.string()),
     favourite: v.optional(v.boolean()),
     deleted: v.optional(v.boolean()),
+    type: v.optional(fileType),
   },
   async handler(ctx, args) {
     const hasAccess = await hasAccessToOrg(ctx, args.orgId);
@@ -90,6 +92,11 @@ export const getFiles = query({
     } else {
       files = files.filter((file) => !file.markDeleted);
     }
+
+    if (args.type) {
+      files = files.filter((file) => file.fileType === args.type);
+    }
+
     return files;
   },
 });
@@ -150,13 +157,7 @@ export const deleteFile = mutation({
     if (!access) {
       throw new ConvexError("No access to file");
     }
-    const isAdmin = access.user.orgIds
-      .find((org) => org.orgId === access.file.orgId)
-      ?.roles.includes("admin");
-
-    if (!isAdmin) {
-      throw new ConvexError("You have no admin access to delete this file.");
-    }
+    canDelete(access.user, access.file);
     await ctx.db.patch(args.fileId, { markDeleted: true });
   },
 });
@@ -187,13 +188,7 @@ export const restoreFile = mutation({
     if (!access) {
       throw new ConvexError("No access to file");
     }
-    const isAdmin = access.user.orgIds
-      .find((org) => org.orgId === access.file.orgId)
-      ?.roles.includes("admin");
-
-    if (!isAdmin) {
-      throw new ConvexError("You have no admin access to delete this file.");
-    }
+    canDelete(access.user, access.file);
     await ctx.db.patch(args.fileId, { markDeleted: false });
   },
 });

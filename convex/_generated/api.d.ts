@@ -14,9 +14,10 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as Utils_fileutils from "../Utils/fileutils.js";
+import type * as Utils_userutils from "../Utils/userutils.js";
 import type * as crons from "../crons.js";
 import type * as file from "../file.js";
-import type * as fileutils from "../fileutils.js";
 import type * as http from "../http.js";
 import type * as users from "../users.js";
 
@@ -29,9 +30,10 @@ import type * as users from "../users.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  "Utils/fileutils": typeof Utils_fileutils;
+  "Utils/userutils": typeof Utils_userutils;
   crons: typeof crons;
   file: typeof file;
-  fileutils: typeof fileutils;
   http: typeof http;
   users: typeof users;
 }>;

@@ -11,6 +11,15 @@ import { useOrganization, useUser } from "@clerk/nextjs";
 import FileTable from "@/components/FileTable";
 import { columns } from "@/components/Columns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Doc } from "../../convex/_generated/dataModel";
+import { Label } from "@/components/ui/label";
 
 const RightSidebar = ({
   title,
@@ -28,6 +37,9 @@ const RightSidebar = ({
     orgId = organization.organization?.id ?? user.user?.id;
   }
   const [query, setQuery] = useState("");
+  const [fileType, setFileType] = useState<Doc<"files">["fileType"] | "All">(
+    "All",
+  );
 
   const getAllFavourites = useQuery(
     api.file.getAllFavourites,
@@ -42,6 +54,7 @@ const RightSidebar = ({
           query: query,
           favourite: favouritesOnly,
           deleted: deleted,
+          type: fileType === "All" ? undefined : fileType,
         }
       : "skip",
   );
@@ -53,17 +66,47 @@ const RightSidebar = ({
         <SearchBar query={query} setQuery={setQuery} />
         <UploadFilePopUpOrg />
       </div>
-      <Tabs defaultValue="grid" className={"mt-8"}>
-        <TabsList>
-          <TabsTrigger value="grid" className={"flex gap-2 items-center"}>
-            <Grid3x3Icon />
-            Grid View
-          </TabsTrigger>
-          <TabsTrigger value="table" className={"flex gap-2 items-center"}>
-            <Table2 />
-            Table View
-          </TabsTrigger>
-        </TabsList>
+      <Tabs defaultValue="grid" className={"mt-8 scroll-m-2"}>
+        <div className={"flex justify-between items-center"}>
+          <TabsList>
+            <TabsTrigger value="grid" className={"flex gap-2 items-center"}>
+              <Grid3x3Icon />
+              Grid View
+            </TabsTrigger>
+            <TabsTrigger value="table" className={"flex gap-2 items-center"}>
+              <Table2 />
+              Table View
+            </TabsTrigger>
+          </TabsList>
+          <div className={"flex gap-2 items-center"}>
+            <Label htmlFor={"type-select"}>Type Filter</Label>
+            <Select
+              value={fileType}
+              onValueChange={(newType) => {
+                setFileType(newType as Doc<"files">["fileType"] | "All");
+              }}
+            >
+              <SelectTrigger
+                id={"type-select"}
+                className="w-[180px]"
+                defaultValue={"All Files"}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All">All Files</SelectItem>
+                <SelectItem value="jpeg">Jpeg</SelectItem>
+                <SelectItem value="csv">Csv</SelectItem>
+                <SelectItem value="png">Png</SelectItem>
+                <SelectItem value="pdf">Pdf</SelectItem>
+                <SelectItem value="zip">Zip</SelectItem>
+                <SelectItem value="video">Video</SelectItem>
+                <SelectItem value="svg">Svg</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
         {isLoading && (
           <div className={"flex flex-col w-full items-center mt-36 mb-5"}>
             <Loader2 className={"h-32 w-32 animate-spin text-gray-400"} />
