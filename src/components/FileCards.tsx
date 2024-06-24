@@ -64,11 +64,11 @@ const FileCards = ({
         >
           <Avatar className={"size-6"}>
             <AvatarImage src={userProfile?.imageUrl} />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarFallback>AV</AvatarFallback>
           </Avatar>
-          {userProfile?.name}
+          <h1 className={'overflow-x-scroll mr-5'}>{userProfile?.name}</h1>
         </div>
-        <h1 className={"text-xs text-gray-400 flex items-center mt-5"}>
+        <h1 className={"ml-7 text-xs text-gray-400 flex items-center mt-5"}>
           Uploaded On : {formatRelative(file._creationTime, new Date())}
         </h1>
       </CardFooter>
