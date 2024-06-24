@@ -26,14 +26,15 @@ import { api } from "../../convex/_generated/api";
 import { useOrganization, useUser } from "@clerk/nextjs";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
-import {Doc} from "../../convex/_generated/dataModel";
+import { Doc } from "../../convex/_generated/dataModel";
 
 const formSchema = z.object({
   filename: z.string().min(2, {
     message: "Filename must be at least 2 characters.",
   }),
-  file: z.custom<FileList>((files) => files.instanceof(FileList), "Required")
-    .refine((file) => file?.length == 1, "File is required."),
+  file: z
+    .custom<FileList>((val) => val instanceof FileList, "Required")
+    .refine((files) => files.length > 0, `Required`),
 });
 
 const UploadFilePopUpOrg = () => {

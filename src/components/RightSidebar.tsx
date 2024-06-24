@@ -68,7 +68,7 @@ const RightSidebar = ({
 
   const isLoading = files == undefined;
   return (
-    <section className={"w-full ml-4 mb-5"}>
+    <section className={"mt-10 pt-8 lg:w-[1700px]"}>
       <div className={"flex justify-between items-center -mt-16"}>
         <h1 className={"text-4xl font-bold w-[180px]"}>{title}</h1>
         <SearchBar query={query} setQuery={setQuery} />
@@ -122,7 +122,7 @@ const RightSidebar = ({
         ) : (
           <>
             <TabsContent value="grid" className={"mt-5"}>
-              <div className={"grid grid-cols-3 gap-6"}>
+              <div className={"grid md:grid-cols-3 gap-6 sm:grid-cols-2"}>
                 {modifiedFiles?.map((file) => (
                   <FileCards key={file._id} file={file} />
                 ))}

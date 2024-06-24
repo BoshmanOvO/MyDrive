@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 const Sidebar = () => {
   const pathname = usePathname();
   return (
-    <div className={"w-40 flex flex-col gap-5"}>
+    <div className={"w-36 flex flex-col gap-5"}>
       <Link
         href={"/dashboard/files"}
         className={"hover:bg-slate-100 rounded-2xl"}
